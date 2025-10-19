@@ -1,0 +1,114 @@
+openapi: 3.0.0
+info:
+  title: FoodExpress API
+  description: API pour gérer les utilisateurs, les restaurants et les menus.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Serveur local
+paths:
+  /users:
+    get:
+      summary: Récupérer tous les utilisateurs
+      responses:
+        '200':
+          description: Liste des utilisateurs récupérée avec succès
+        '500':
+          description: Erreur serveur
+    post:
+      summary: Créer un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+  /restaurants:
+    get:
+      summary: Récupérer tous les restaurants
+      responses:
+        '200':
+          description: Liste des restaurants récupérée avec succès
+        '500':
+          description: Erreur serveur
+    post:
+      summary: Créer un nouveau restaurant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: Restaurant créé avec succès
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+  /menus:
+    get:
+      summary: Récupérer tous les menus
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des menus récupérée avec succès
+        '500':
+          description: Erreur serveur
+    post:
+      summary: Créer un nouveau menu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                restaurant_id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+      responses:
+        '201':
+          description: Menu créé avec succès
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
