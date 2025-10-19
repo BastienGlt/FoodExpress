@@ -1,8 +1,8 @@
-# 🍕 FoodExpress API
+﻿#  FoodExpress API
 
 API REST pour la gestion de restaurants et de menus développée avec Node.js, Express et MongoDB.
 
-## 📋 Table des matières
+##  Table des matières
 
 - [Description](#description)
 - [Fonctionnalités](#fonctionnalités)
@@ -17,38 +17,38 @@ API REST pour la gestion de restaurants et de menus développée avec Node.js, E
 - [Endpoints](#endpoints)
 - [Licence](#licence)
 
-## 📝 Description
+##  Description
 
 FoodExpress est une API RESTful complète permettant de gérer des restaurants, leurs menus et les utilisateurs. L'API offre des fonctionnalités d'authentification JWT, de gestion des rôles (admin/user), et de CRUD complet sur les ressources.
 
-## ✨ Fonctionnalités
+##  Fonctionnalités
 
-- 🔐 **Authentification & Autorisation**
+-  **Authentification & Autorisation**
   - Inscription et connexion utilisateur
   - Tokens JWT pour la sécurisation des endpoints
   - Gestion des rôles (Admin/User)
   
-- 👥 **Gestion des utilisateurs**
+-  **Gestion des utilisateurs**
   - CRUD complet sur les utilisateurs
   - Hashage des mots de passe avec bcrypt
   - Contrôle d'accès basé sur les rôles
   
-- 🏪 **Gestion des restaurants**
+-  **Gestion des restaurants**
   - CRUD complet (Admin uniquement pour CUD)
   - Pagination et tri des résultats
   - Recherche par nom ou adresse
   
-- 🍽️ **Gestion des menus**
+-  **Gestion des menus**
   - CRUD complet (Admin uniquement pour CUD)
   - Filtrage par restaurant, catégorie, et prix
   - Liaison avec les restaurants
   - Pagination et tri avancés
 
-- 📚 **Documentation**
+-  **Documentation**
   - Documentation Swagger/OpenAPI intégrée
   - Tests unitaires complets avec Jest
 
-## 🛠️ Technologies utilisées
+##  Technologies utilisées
 
 - **Runtime:** Node.js
 - **Framework:** Express.js v5.1.0
@@ -60,7 +60,7 @@ FoodExpress est une API RESTful complète permettant de gérer des restaurants, 
 - **Développement:** Nodemon v3.1.10
 - **Variables d'environnement:** dotenv v17.2.3
 
-## 📦 Prérequis
+##  Prérequis
 
 Avant de commencer, assurez-vous d'avoir installé :
 
@@ -75,12 +75,12 @@ npm --version
 mongod --version
 ```
 
-## 🚀 Installation
+##  Installation
 
 ### 1. Cloner le projet
 
 ```bash
-git clone <url-du-repo>
+git clone https://github.com/BastienGlt/FoodExpress.git
 cd FoodExpress
 ```
 
@@ -92,7 +92,7 @@ npm install
 
 Cette commande installera toutes les dépendances listées dans `package.json`.
 
-## ⚙️ Configuration
+##  Configuration
 
 ### 1. Configurer MongoDB
 
@@ -110,7 +110,7 @@ mongod
 
 ### 2. Configurer les variables d'environnement
 
-Créez un fichier `.env` à la racine du projet (si ce n'est pas déjà fait) :
+Créez un fichier `.env` à la racine du projet :
 
 ```bash
 # .env
@@ -119,7 +119,7 @@ JWT_SECRET=your-secret-key-here
 PORT=3000
 ```
 
-**⚠️ Important:** Remplacez `your-secret-key-here` par une clé secrète forte pour la production.
+** Important:** Remplacez `your-secret-key-here` par une clé secrète forte pour la production.
 
 ### 3. Variables d'environnement disponibles
 
@@ -129,7 +129,7 @@ PORT=3000
 | `JWT_SECRET` | Clé secrète pour JWT | `your-secret-key` |
 | `PORT` | Port du serveur | `3000` |
 
-## 🎯 Démarrage
+##  Démarrage
 
 ### Mode production
 
@@ -155,7 +155,7 @@ Connected to the database mongodb://localhost:27017/foodexpress
 Server is running on http://localhost:3000
 ```
 
-## 🧪 Tests
+##  Tests
 
 Le projet inclut une suite complète de tests unitaires.
 
@@ -168,9 +168,9 @@ npm test
 ### Couverture des tests
 
 Les tests couvrent :
-- ✅ 16 tests pour les utilisateurs (`user.test.js`)
-- ✅ 15 tests pour les restaurants (`restaurant.test.js`)
-- ✅ 20 tests pour les menus (`menu.test.js`)
+-  16 tests pour les utilisateurs (`user.test.js`)
+-  15 tests pour les restaurants (`restaurant.test.js`)
+-  20 tests pour les menus (`menu.test.js`)
 
 **Total : 51 tests**
 
@@ -178,12 +178,12 @@ Les tests couvrent :
 
 ```
 tests/
-├── user.test.js          # Tests des endpoints utilisateurs
-├── restaurant.test.js    # Tests des endpoints restaurants
-└── menu.test.js          # Tests des endpoints menus
+ user.test.js          # Tests des endpoints utilisateurs
+ restaurant.test.js    # Tests des endpoints restaurants
+ menu.test.js          # Tests des endpoints menus
 ```
 
-## 📚 Documentation API
+##  Documentation API
 
 ### Swagger UI
 
@@ -195,43 +195,40 @@ http://localhost:3000/api-docs
 
 ### Documentation Postman
 
-Des fichiers de documentation Postman sont également disponibles :
-- `POSTMAN_MENUS.md` - Documentation des endpoints menus
-- `POSTMAN_RESTAURANTS.md` - Documentation des endpoints restaurants
-- `API_DOCUMENTATION.md` - Documentation générale de l'API
+Des fichiers de documentation Postman sont également disponibles dans le projet.
 
-## 📁 Structure du projet
+##  Structure du projet
 
 ```
 FoodExpress/
-├── config/
-│   └── db.config.js              # Configuration MongoDB
-├── controllers/
-│   ├── menu.controller.js        # Logique métier des menus
-│   ├── restaurant.controller.js  # Logique métier des restaurants
-│   └── user.controller.js        # Logique métier des utilisateurs
-├── middleware/
-│   └── auth.middleware.js        # Middlewares d'authentification
-├── models/
-│   ├── menu.model.js             # Modèle Mongoose pour les menus
-│   ├── restaurant.model.js       # Modèle Mongoose pour les restaurants
-│   └── user.model.js             # Modèle Mongoose pour les utilisateurs
-├── routes/
-│   ├── menu.route.js             # Routes des menus
-│   ├── restaurant.route.js       # Routes des restaurants
-│   └── user.route.js             # Routes des utilisateurs
-├── tests/
-│   ├── menu.test.js              # Tests unitaires des menus
-│   ├── restaurant.test.js        # Tests unitaires des restaurants
-│   └── user.test.js              # Tests unitaires des utilisateurs
-├── .env                          # Variables d'environnement
-├── jest.config.js                # Configuration Jest
-├── package.json                  # Dépendances et scripts
-├── server.js                     # Point d'entrée de l'application
-└── swagger.yaml                  # Spécification OpenAPI
+ config/
+    db.config.js              # Configuration MongoDB
+ controllers/
+    menu.controller.js        # Logique métier des menus
+    restaurant.controller.js  # Logique métier des restaurants
+    user.controller.js        # Logique métier des utilisateurs
+ middleware/
+    auth.middleware.js        # Middlewares d'authentification
+ models/
+    menu.model.js             # Modèle Mongoose pour les menus
+    restaurant.model.js       # Modèle Mongoose pour les restaurants
+    user.model.js             # Modèle Mongoose pour les utilisateurs
+ routes/
+    menu.route.js             # Routes des menus
+    restaurant.route.js       # Routes des restaurants
+    user.route.js             # Routes des utilisateurs
+ tests/
+    menu.test.js              # Tests unitaires des menus
+    restaurant.test.js        # Tests unitaires des restaurants
+    user.test.js              # Tests unitaires des utilisateurs
+ .env                          # Variables d'environnement
+ jest.config.js                # Configuration Jest
+ package.json                  # Dépendances et scripts
+ server.js                     # Point d'entrée de l'application
+ swagger.yaml                  # Spécification OpenAPI
 ```
 
-## 🔗 Endpoints
+##  Endpoints
 
 ### Authentification (Public)
 
@@ -244,31 +241,31 @@ FoodExpress/
 
 | Méthode | Endpoint | Auth | Rôle | Description |
 |---------|----------|------|------|-------------|
-| `GET` | `/users` | ✅ | Admin | Liste tous les utilisateurs |
-| `GET` | `/users/:id` | ✅ | Owner/Admin | Récupère un utilisateur |
-| `PUT` | `/users/:id` | ✅ | Owner/Admin | Met à jour un utilisateur |
-| `DELETE` | `/users/:id` | ✅ | Owner/Admin | Supprime un utilisateur |
+| `GET` | `/users` |  | Admin | Liste tous les utilisateurs |
+| `GET` | `/users/:id` |  | Owner/Admin | Récupère un utilisateur |
+| `PUT` | `/users/:id` |  | Owner/Admin | Met à jour un utilisateur |
+| `DELETE` | `/users/:id` |  | Owner/Admin | Supprime un utilisateur |
 
 ### Restaurants
 
 | Méthode | Endpoint | Auth | Rôle | Description |
 |---------|----------|------|------|-------------|
-| `GET` | `/restaurants` | ❌ | Public | Liste tous les restaurants (pagination) |
-| `GET` | `/restaurants/:id` | ❌ | Public | Récupère un restaurant |
-| `POST` | `/restaurants` | ✅ | Admin | Crée un restaurant |
-| `PUT` | `/restaurants/:id` | ✅ | Admin | Met à jour un restaurant |
-| `DELETE` | `/restaurants/:id` | ✅ | Admin | Supprime un restaurant |
+| `GET` | `/restaurants` |  | Public | Liste tous les restaurants (pagination) |
+| `GET` | `/restaurants/:id` |  | Public | Récupère un restaurant |
+| `POST` | `/restaurants` |  | Admin | Crée un restaurant |
+| `PUT` | `/restaurants/:id` |  | Admin | Met à jour un restaurant |
+| `DELETE` | `/restaurants/:id` |  | Admin | Supprime un restaurant |
 
 ### Menus
 
 | Méthode | Endpoint | Auth | Rôle | Description |
 |---------|----------|------|------|-------------|
-| `GET` | `/menus` | ❌ | Public | Liste tous les menus (pagination, filtres) |
-| `GET` | `/menus/:id` | ❌ | Public | Récupère un menu |
-| `GET` | `/menus/restaurant/:restaurantId` | ❌ | Public | Menus d'un restaurant |
-| `POST` | `/menus` | ✅ | Admin | Crée un menu |
-| `PUT` | `/menus/:id` | ✅ | Admin | Met à jour un menu |
-| `DELETE` | `/menus/:id` | ✅ | Admin | Supprime un menu |
+| `GET` | `/menus` |  | Public | Liste tous les menus (pagination, filtres) |
+| `GET` | `/menus/:id` |  | Public | Récupère un menu |
+| `GET` | `/menus/restaurant/:restaurantId` |  | Public | Menus d'un restaurant |
+| `POST` | `/menus` |  | Admin | Crée un menu |
+| `PUT` | `/menus/:id` |  | Admin | Met à jour un menu |
+| `DELETE` | `/menus/:id` |  | Admin | Supprime un menu |
 
 ### Paramètres de requête disponibles
 
@@ -286,7 +283,7 @@ FoodExpress/
 - `minPrice` / `maxPrice` : Plage de prix
 - `search` : Recherche textuelle
 
-## 🔐 Authentification
+##  Authentification
 
 L'API utilise JWT (JSON Web Tokens) pour l'authentification.
 
@@ -313,7 +310,7 @@ curl -X GET http://localhost:3000/users \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
-## 🎨 Catégories de menu disponibles
+##  Catégories de menu disponibles
 
 - `entrée` - Entrées et hors-d'œuvre
 - `plat` - Plats principaux
@@ -321,12 +318,12 @@ curl -X GET http://localhost:3000/users \
 - `boisson` - Boissons
 - `apéritif` - Apéritifs
 
-## 👤 Rôles utilisateurs
+##  Rôles utilisateurs
 
 - **User** : Utilisateur standard (lecture, gestion de son propre compte)
 - **Admin** : Administrateur (toutes les permissions, gestion des restaurants et menus)
 
-## 🐛 Dépannage
+##  Dépannage
 
 ### MongoDB ne démarre pas
 
@@ -349,17 +346,17 @@ Vérifiez que :
 2. L'URL dans `.env` est correcte
 3. Le port MongoDB (27017) n'est pas bloqué
 
-## 📄 Licence
+##  Licence
 
 ISC
 
-## 👨‍💻 Auteur
+##  Auteur
 
 **Bastien**
 
 ---
 
-## 🤝 Contribution
+##  Contribution
 
 Les contributions sont les bienvenues ! N'hésitez pas à :
 1. Fork le projet
@@ -368,12 +365,10 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrir une Pull Request
 
-## 📞 Support
+##  Support
 
 Pour toute question ou problème, n'hésitez pas à ouvrir une issue sur le dépôt du projet.
 
 ---
 
-**Bon développement ! 🚀**
-#   F o o d E x p r e s s  
- 
+**Bon développement ! **
