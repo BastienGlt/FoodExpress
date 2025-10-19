@@ -1,114 +1,1369 @@
 openapi: 3.0.0
 info:
   title: FoodExpress API
-  description: API pour gérer les utilisateurs, les restaurants et les menus.
+  description: |
+    API RESTful complète pour la gestion de restaurants et de leurs menus.
+    
+    ## Fonctionnalités
+    - 🔐 Authentification JWT
+    - 👥 Gestion des utilisateurs avec rôles (Admin/User)
+    - 🏪 Gestion des restaurants
+    - 🍽️ Gestion des menus avec catégories
+    - 📄 Pagination et tri avancés
+    - 🔍 Recherche et filtres
+    
+    ## Authentification
+    La plupart des endpoints nécessitent une authentification JWT.
+    Utilisez le bouton "Authorize" ci-dessus pour configurer votre token.
+    
+    Format: `Bearer <votre-token-jwt>`
   version: 1.0.0
+  contact:
+    name: Bastien
+    email: support@foodexpress.com
+  license:
+    name: ISC
 servers:
   - url: http://localhost:3000
-    description: Serveur local
+    description: Serveur de développement local
+  - url: https://api.foodexpress.com
+    description: Serveur de production
+
+tags:
+  - name: Authentification
+    description: Endpoints publics pour l'inscription et la connexion
+  - name: Utilisateurs
+    description: Gestion des utilisateurs (nécessite authentification)
+  - name: Restaurants
+    description: Gestion des restaurants
+  - name: Menus
+    description: Gestion des menus des restaurants
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Entrez votre token JWT (obtenu via /users/login)
+
+  schemas:
+    # Schémas pour les utilisateurs
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        username:
+          type: string
+          example: "john_doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        role:
+          type: string
+          enum: [user, admin]
+          example: "user"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserRegistration:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          example: "john_doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        password:
+          type: string
+          minLength: 6
+          example: "Password123!"
+        role:
+          type: string
+          enum: [user, admin]
+          default: user
+          example: "user"
+
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        password:
+          type: string
+          example: "Password123!"
+
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "john_doe_updated"
+        email:
+          type: string
+          format: email
+          example: "john.new@example.com"
+        password:
+          type: string
+          example: "NewPassword123!"
+        role:
+          type: string
+          enum: [user, admin]
+          description: Seuls les admins peuvent modifier les rôles
+
+    # Schémas pour les restaurants
+    Restaurant:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          example: "La Bella Pizza"
+        address:
+          type: string
+          example: "123 Rue de la Paix, 75001 Paris"
+        phone:
+          type: string
+          example: "0123456789"
+        opening_hours:
+          type: string
+          example: "9h-22h du lundi au samedi"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    RestaurantCreate:
+      type: object
+      required:
+        - name
+        - address
+        - phone
+        - opening_hours
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          example: "La Bella Pizza"
+        address:
+          type: string
+          maxLength: 500
+          example: "123 Rue de la Paix, 75001 Paris"
+        phone:
+          type: string
+          maxLength: 20
+          example: "0123456789"
+        opening_hours:
+          type: string
+          maxLength: 255
+          example: "9h-22h du lundi au samedi"
+
+    RestaurantUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "La Bella Pizza"
+        address:
+          type: string
+          example: "123 Rue de la Paix, 75001 Paris"
+        phone:
+          type: string
+          example: "0123456789"
+        opening_hours:
+          type: string
+          example: "9h-23h tous les jours"
+
+    # Schémas pour les menus
+    Menu:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        restaurant_id:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            address:
+              type: string
+        name:
+          type: string
+          example: "Pizza Margherita"
+        description:
+          type: string
+          example: "Pizza classique avec tomate, mozzarella et basilic"
+        price:
+          type: number
+          format: float
+          example: 12.50
+        category:
+          type: string
+          enum: [entrée, plat, dessert, boisson, apéritif]
+          example: "plat"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    MenuCreate:
+      type: object
+      required:
+        - restaurant_id
+        - name
+        - description
+        - price
+        - category
+      properties:
+        restaurant_id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+          description: ID du restaurant auquel appartient ce menu
+        name:
+          type: string
+          maxLength: 255
+          example: "Pizza Margherita"
+        description:
+          type: string
+          maxLength: 1000
+          example: "Pizza classique avec tomate, mozzarella et basilic"
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 12.50
+        category:
+          type: string
+          enum: [entrée, plat, dessert, boisson, apéritif]
+          example: "plat"
+
+    MenuUpdate:
+      type: object
+      properties:
+        restaurant_id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          example: "Pizza Margherita Deluxe"
+        description:
+          type: string
+          example: "Pizza avec tomate, mozzarella, basilic et burrata"
+        price:
+          type: number
+          format: float
+          example: 15.50
+        category:
+          type: string
+          enum: [entrée, plat, dessert, boisson, apéritif]
+
+    # Schémas de réponses
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          example: 1
+        totalPages:
+          type: integer
+          example: 5
+        totalRestaurants:
+          type: integer
+          example: 48
+        totalMenus:
+          type: integer
+          example: 48
+        hasNextPage:
+          type: boolean
+          example: true
+        hasPrevPage:
+          type: boolean
+          example: false
+        limit:
+          type: integer
+          example: 10
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Opération réussie"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Une erreur est survenue"
+        error:
+          type: string
+          example: "Détails de l'erreur"
+
 paths:
-  /users:
-    get:
-      summary: Récupérer tous les utilisateurs
-      responses:
-        '200':
-          description: Liste des utilisateurs récupérée avec succès
-        '500':
-          description: Erreur serveur
+  # ==================== AUTHENTIFICATION ====================
+  /users/register:
     post:
-      summary: Créer un nouvel utilisateur
+      tags:
+        - Authentification
+      summary: Inscription d'un nouvel utilisateur
+      description: Créer un nouveau compte utilisateur. Le rôle par défaut est "user".
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                username:
-                  type: string
-                password:
-                  type: string
+              $ref: '#/components/schemas/UserRegistration'
+            examples:
+              user:
+                summary: Utilisateur standard
+                value:
+                  username: "john_doe"
+                  email: "john@example.com"
+                  password: "Password123!"
+                  role: "user"
+              admin:
+                summary: Administrateur
+                value:
+                  username: "admin"
+                  email: "admin@example.com"
+                  password: "AdminPass123!"
+                  role: "admin"
       responses:
         '201':
           description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Utilisateur créé avec succès"
+                  user:
+                    $ref: '#/components/schemas/User'
         '400':
-          description: Données invalides
+          description: Données invalides ou utilisateur déjà existant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Un utilisateur avec cet email ou ce nom d'utilisateur existe déjà"
         '500':
           description: Erreur serveur
-  /restaurants:
-    get:
-      summary: Récupérer tous les restaurants
-      responses:
-        '200':
-          description: Liste des restaurants récupérée avec succès
-        '500':
-          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/login:
     post:
-      summary: Créer un nouveau restaurant
+      tags:
+        - Authentification
+      summary: Connexion utilisateur
+      description: Se connecter et obtenir un token JWT pour authentifier les requêtes suivantes.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                address:
-                  type: string
-                phone:
-                  type: string
+              $ref: '#/components/schemas/UserLogin'
+            example:
+              email: "john@example.com"
+              password: "Password123!"
       responses:
-        '201':
-          description: Restaurant créé avec succès
-        '400':
-          description: Données invalides
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Connexion réussie"
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Email ou mot de passe incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Email ou mot de passe incorrect"
         '500':
           description: Erreur serveur
-  /menus:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== UTILISATEURS ====================
+  /users:
     get:
-      summary: Récupérer tous les menus
+      tags:
+        - Utilisateurs
+      summary: Liste tous les utilisateurs
+      description: Récupérer la liste de tous les utilisateurs. **Réservé aux administrateurs.**
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des utilisateurs récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Utilisateurs récupérés avec succès"
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '401':
+          description: Token manquant ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Token d'accès requis"
+        '403':
+          description: Accès refusé (non-admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Accès réservé aux administrateurs"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      tags:
+        - Utilisateurs
+      summary: Récupérer un utilisateur par ID
+      description: Obtenir les détails d'un utilisateur spécifique. Les utilisateurs peuvent uniquement voir leur propre profil, sauf les admins.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'utilisateur
+          example: "507f1f77bcf86cd799439011"
+      responses:
+        '200':
+          description: Utilisateur récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Utilisateur récupéré avec succès"
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Accès non autorisé. Vous ne pouvez accéder qu'à vos propres données."
+        '404':
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Utilisateur non trouvé"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Utilisateurs
+      summary: Mettre à jour un utilisateur
+      description: Modifier les informations d'un utilisateur. Les utilisateurs peuvent uniquement modifier leur propre profil. Seuls les admins peuvent changer les rôles.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+            example:
+              username: "john_updated"
+              email: "john.new@example.com"
+      responses:
+        '200':
+          description: Utilisateur mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Utilisateur mis à jour avec succès"
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Utilisateurs
+      summary: Supprimer un utilisateur
+      description: Supprimer un compte utilisateur. Les utilisateurs peuvent uniquement supprimer leur propre compte, sauf les admins.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'utilisateur
+      responses:
+        '200':
+          description: Utilisateur supprimé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Utilisateur supprimé avec succès"
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== RESTAURANTS ====================
+  /restaurants:
+    get:
+      tags:
+        - Restaurants
+      summary: Liste tous les restaurants
+      description: |
+        Récupérer la liste de tous les restaurants avec pagination, tri et recherche.
+        
+        **Endpoint public** - Aucune authentification requise.
       parameters:
         - name: page
           in: query
           required: false
           schema:
             type: integer
+            default: 1
+            minimum: 1
+          description: Numéro de la page
         - name: limit
           in: query
           required: false
           schema:
             type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+          description: Nombre d'éléments par page
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [name, address, createdAt]
+            default: name
+          description: Champ de tri
+        - name: sortOrder
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Ordre de tri
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Recherche dans le nom ou l'adresse
+          example: "Pizza"
       responses:
         '200':
-          description: Liste des menus récupérée avec succès
+          description: Liste des restaurants récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Restaurants récupérés avec succès"
+                  restaurants:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Restaurant'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
         '500':
           description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     post:
-      summary: Créer un nouveau menu
+      tags:
+        - Restaurants
+      summary: Créer un restaurant
+      description: Créer un nouveau restaurant. **Réservé aux administrateurs.**
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                restaurant_id:
-                  type: string
-                name:
-                  type: string
-                description:
-                  type: string
-                price:
-                  type: number
-                category:
-                  type: string
+              $ref: '#/components/schemas/RestaurantCreate'
+            example:
+              name: "La Bella Pizza"
+              address: "123 Rue de la Paix, 75001 Paris"
+              phone: "0123456789"
+              opening_hours: "9h-22h du lundi au samedi"
+      responses:
+        '201':
+          description: Restaurant créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Restaurant créé avec succès"
+                  restaurant:
+                    $ref: '#/components/schemas/Restaurant'
+        '400':
+          description: Données invalides ou restaurant déjà existant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Un restaurant avec ce nom et cette adresse existe déjà"
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé (non-admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Accès réservé aux administrateurs"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /restaurants/{id}:
+    get:
+      tags:
+        - Restaurants
+      summary: Récupérer un restaurant par ID
+      description: Obtenir les détails d'un restaurant spécifique. **Endpoint public.**
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du restaurant
+          example: "507f1f77bcf86cd799439011"
+      responses:
+        '200':
+          description: Restaurant récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Restaurant récupéré avec succès"
+                  restaurant:
+                    $ref: '#/components/schemas/Restaurant'
+        '404':
+          description: Restaurant non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Restaurant non trouvé"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Restaurants
+      summary: Mettre à jour un restaurant
+      description: Modifier les informations d'un restaurant. **Réservé aux administrateurs.**
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du restaurant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantUpdate'
+            example:
+              name: "La Bella Pizza Deluxe"
+              opening_hours: "9h-23h tous les jours"
+      responses:
+        '200':
+          description: Restaurant mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Restaurant mis à jour avec succès"
+                  restaurant:
+                    $ref: '#/components/schemas/Restaurant'
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé (non-admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Restaurant non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Restaurants
+      summary: Supprimer un restaurant
+      description: Supprimer un restaurant. **Réservé aux administrateurs.**
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du restaurant
+      responses:
+        '200':
+          description: Restaurant supprimé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Restaurant supprimé avec succès"
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé (non-admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Restaurant non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== MENUS ====================
+  /menus:
+    get:
+      tags:
+        - Menus
+      summary: Liste tous les menus
+      description: |
+        Récupérer la liste de tous les menus avec pagination, tri, et filtres avancés.
+        
+        **Endpoint public** - Aucune authentification requise.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Numéro de la page
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+          description: Nombre d'éléments par page
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [name, price, category, createdAt]
+            default: name
+          description: Champ de tri
+        - name: sortOrder
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Ordre de tri
+        - name: restaurant_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filtrer par ID de restaurant
+          example: "507f1f77bcf86cd799439011"
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [entrée, plat, dessert, boisson, apéritif]
+          description: Filtrer par catégorie
+        - name: minPrice
+          in: query
+          required: false
+          schema:
+            type: number
+            minimum: 0
+          description: Prix minimum
+          example: 5.00
+        - name: maxPrice
+          in: query
+          required: false
+          schema:
+            type: number
+            minimum: 0
+          description: Prix maximum
+          example: 20.00
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Recherche dans le nom ou la description
+          example: "Pizza"
+      responses:
+        '200':
+          description: Liste des menus récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menus récupérés avec succès"
+                  menus:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Menu'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Menus
+      summary: Créer un menu
+      description: Créer un nouveau menu pour un restaurant. **Réservé aux administrateurs.**
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuCreate'
+            examples:
+              pizza:
+                summary: Pizza
+                value:
+                  restaurant_id: "507f1f77bcf86cd799439011"
+                  name: "Pizza Margherita"
+                  description: "Pizza classique avec tomate, mozzarella et basilic"
+                  price: 12.50
+                  category: "plat"
+              dessert:
+                summary: Dessert
+                value:
+                  restaurant_id: "507f1f77bcf86cd799439011"
+                  name: "Tiramisu"
+                  description: "Dessert italien traditionnel au café"
+                  price: 6.50
+                  category: "dessert"
       responses:
         '201':
           description: Menu créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menu créé avec succès"
+                  menu:
+                    $ref: '#/components/schemas/Menu'
         '400':
           description: Données invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé (non-admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Restaurant non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Restaurant non trouvé"
         '500':
           description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /menus/{id}:
+    get:
+      tags:
+        - Menus
+      summary: Récupérer un menu par ID
+      description: Obtenir les détails d'un menu spécifique avec les informations du restaurant associé. **Endpoint public.**
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du menu
+          example: "507f1f77bcf86cd799439011"
+      responses:
+        '200':
+          description: Menu récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menu récupéré avec succès"
+                  menu:
+                    $ref: '#/components/schemas/Menu'
+        '404':
+          description: Menu non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Menu non trouvé"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Menus
+      summary: Mettre à jour un menu
+      description: Modifier les informations d'un menu. **Réservé aux administrateurs.**
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du menu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuUpdate'
+            example:
+              name: "Pizza Margherita Deluxe"
+              description: "Pizza avec tomate, mozzarella, basilic et burrata"
+              price: 15.50
+      responses:
+        '200':
+          description: Menu mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menu mis à jour avec succès"
+                  menu:
+                    $ref: '#/components/schemas/Menu'
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé (non-admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Menu ou restaurant non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Menus
+      summary: Supprimer un menu
+      description: Supprimer un menu. **Réservé aux administrateurs.**
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du menu
+      responses:
+        '200':
+          description: Menu supprimé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menu supprimé avec succès"
+        '401':
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accès refusé (non-admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Menu non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /menus/restaurant/{restaurantId}:
+    get:
+      tags:
+        - Menus
+      summary: Récupérer les menus d'un restaurant
+      description: |
+        Obtenir tous les menus d'un restaurant spécifique avec pagination et tri.
+        
+        **Endpoint public** - Aucune authentification requise.
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du restaurant
+          example: "507f1f77bcf86cd799439011"
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Numéro de la page
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+          description: Nombre d'éléments par page
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [name, price, category]
+            default: category
+          description: Champ de tri
+        - name: sortOrder
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Ordre de tri
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [entrée, plat, dessert, boisson, apéritif]
+          description: Filtrer par catégorie
+      responses:
+        '200':
+          description: Menus du restaurant récupérés avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menus du restaurant récupérés avec succès"
+                  restaurant:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      address:
+                        type: string
+                  menus:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Menu'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '404':
+          description: Restaurant non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Restaurant non trouvé"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
